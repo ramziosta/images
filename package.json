@@ -1,0 +1,37 @@
+{
+  "name": "images",
+  "version": "1.0.0",
+  "description": " backend server setup in typescript to handle images",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ramziosta/images.git"
+  },
+  "keywords": [
+    "typescript",
+    "javascript",
+    "nodeJS",
+    "express"
+  ],
+  "author": "Ramzi Osta",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ramziosta/images/issues"
+  },
+  "homepage": "https://github.com/ramziosta/images#readme",
+  "devDependencies": {
+    "@types/node": "^20.14.10",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.3"
+  },
+  "dependencies": {
+    "@types/express": "^4.17.21",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "multer": "^1.4.5-lts.1",
+    "sharp": "^0.33.4"
+  }
+}
