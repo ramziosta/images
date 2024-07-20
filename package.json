@@ -1,44 +1,27 @@
 {
-  "name": "images",
+  "name": "imageproject",
   "version": "1.0.0",
-  "description": " backend server setup in typescript to handle images",
-  "main": "server.ts",
+  "main": "src/server.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "ts-node src/server.ts"
+    "start": "ts-node src/server.ts",
+    "dev": "nodemon --watch src --ext ts,json --exec \"ts-node src/server.ts\""
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ramziosta/images.git"
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "express": "^4.19.2",
+    "express-validator": "^7.1.0",
+    "multer": "^1.4.5-lts.1",
+    "sharp": "^0.33.4"
   },
-  "keywords": [
-    "typescript",
-    "javascript",
-    "nodeJS",
-    "express"
-  ],
-  "author": "Ramzi Osta",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/ramziosta/images/issues"
-  },
-  "homepage": "https://github.com/ramziosta/images#readme",
   "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/express-validator": "^3.0.0",
     "@types/multer": "^1.4.11",
-    "@types/node": "^20.14.10",
+    "@types/node": "^20.14.11",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.3"
-  },
-  "dependencies": {
-    "@types/express": "^4.17.21",
-    "body-parser": "^1.20.2",
-    "cors": "^2.8.5",
-    "express": "^4.19.2",
-    "express-routes": "^1.0.1",
-    "express-validator": "^7.1.0",
-    "fs-extra": "^11.2.0",
-    "multer": "^1.4.5-lts.1",
-    "path": "^0.12.7",
-    "sharp": "^0.33.4"
   }
 }
