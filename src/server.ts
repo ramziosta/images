@@ -13,6 +13,7 @@ app.use('/images', express.static(path.join(__dirname, '../../images')));
 app.use('/', imageRoutes);
 app.use(errorHandler);
 
-app.listen(port, (): void => {
+export const server = app.listen(port, (): void => {
     console.log(`Server is running on port ${port}`);
 });
+

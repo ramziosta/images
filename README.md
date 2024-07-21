@@ -9,10 +9,8 @@ Welcome to the Image Processing API! This API allows you to upload images and pe
 - **Image Cropping**: Crop specific areas from uploaded images.
 - **Image Downloading**: Download the processed images after applying transformations.
 - **Error Handling**: Receives informative messages in case of processing failures or invalid requests.
+- **Image Filtering**: Apply filters like grayscale and blur.
 
-### Bonus Features (to be implemented)
-
-- **Image Filtering**: Apply filters like grayscale and blur (coming soon).
 - **Image Watermarking**: Add a watermark to your processed images (coming soon).
 
 ## Getting Started
@@ -69,6 +67,10 @@ The API endpoints will be documented here as they are implemented. The documenta
 - **On error**: The response will contain an error message describing the issue.
 
 (Note: This is just an example, the actual endpoints and parameters will be documented as we build the functionalities.)
+
+## Test
+![CI Status](https://github.com/ramziosta/images/actions/workflows/ci.yml/badge.svg)
+
 
 ## Contributing
 
