@@ -5,8 +5,7 @@ import {
     resizeImage,
     cropImage,
     uploadImage,
-    downloadImage,
-    watermarkImage
+    downloadImage, greyscaleImage, blurImage
 } from '../controllers/imageController';
 import {
     filePayloadExists,
@@ -28,8 +27,9 @@ router.post('/upload',
 
 router.post('/resize', validateImageInputs, resizeImage);
 router.post('/cropped', validateImageCropInputs, cropImage);
-router.get('/download/:filename', downloadImage);
-router.post('/watermark',watermarkImage);
+router.get('/download/images/:filename', downloadImage);
+router.post('/greyscale', greyscaleImage);
+router.post('/blur', blurImage);
 router.get('/', mainPage);
 
 export default router;

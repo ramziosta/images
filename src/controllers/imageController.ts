@@ -6,10 +6,10 @@ import path from 'path';
 
 export const mainPage = async (req: Request, res: Response) => {
     try {
-        const filePath = path.join(__dirname, '../public/index.html');
+        const filePath: string = path.join(__dirname, '../public/index.html');
         console.log('File path:', filePath);
 
-        res.sendFile(filePath, (err) => {
+        res.sendFile(filePath, (err: Error) => {
             if (err) {
                 console.error('Error sending file:', err);
                 if (!res.headersSent) {
@@ -45,32 +45,65 @@ export const uploadImage = async (req: Request, res: Response) => {
 
 // Resize an image
 export const resizeImage = async (req: Request, res: Response) => {
-    const {inputPath, outputPath, parsedWidth, parsedHeight} = req.body;
+    const { filename, parsedWidth, parsedHeight } = req.body;
+
+    // Define input and output paths
+    const inputPath: string = path.join(__dirname, '../../images', filename);
+    const resizePath: string = path.join(__dirname, '../../images/resized', filename);
 
     try {
+        // Perform resizing
         await sharp(inputPath)
-            .resize({width: parsedWidth, height: parsedHeight})
-            .toFile(outputPath);
-        res.status(200).send({message: 'Image resized successfully.', filename: req.body.filename});
+            .resize({ width: parsedWidth, height: parsedHeight })
+            .toFile(resizePath);
+
+        res.sendFile(resizePath, (err: Error) => {
+            if (err) {
+                console.error('Error sending resized image:', err);
+                res.status(500).send('Error sending resized image.');
+            }
+        });
     } catch (error) {
         console.error('Error resizing image:', error);
         res.status(500).send('Error resizing image.');
     }
 };
-
 export const cropImage = async (req: Request, res: Response) => {
-    const {inputPath, croppedPath, parsedWidth, parsedHeight, parsedLeft, parsedTop} = req.body;
+    const { filename, width, height, left, top } = req.body;
+
+    const parsedWidth: number = parseInt(String(width));
+    const parsedHeight: number = parseInt(String(height));
+    const parsedLeft: number = parseInt(String(left));
+    const parsedTop: number = parseInt(String(top));
+
+    // Define input and output paths
+    const inputPath: string = path.join(__dirname, '../../images', filename);
+    const croppedPath: string = path.join(__dirname, '../../images/cropped', filename);
 
     try {
+        // Ensure the output directory exists
+        const cropDir = path.dirname(croppedPath);
+        if (!fs.existsSync(cropDir)) {
+            fs.mkdirSync(cropDir, { recursive: true });
+        }
+
+        // Perform cropping
         await sharp(inputPath)
-            .extract({width: parsedWidth, height: parsedHeight, left: parsedLeft, top: parsedTop})
-            .toFile(path.join(croppedPath));
-        res.status(200).send({message: 'Image cropped successfully.', inputPath});
+            .extract({ width: parsedWidth, height: parsedHeight, left: parsedLeft, top: parsedTop })
+            .toFile(croppedPath);
+
+        // Send the cropped image file
+        res.sendFile(croppedPath, (err: Error) => {
+            if (err) {
+                console.error('Error sending cropped image:', err);
+                res.status(500).send('Error sending cropped image.');
+            }
+        });
     } catch (error) {
+        console.error('Error cropping image:', error);
         res.status(500).send('Error cropping image.');
     }
 };
-
 export const downloadImage = (req: Request, res: Response) => {
     const filename: string = req.params.filename;
     const filePath: string = path.join('images', filename);
@@ -82,29 +115,69 @@ export const downloadImage = (req: Request, res: Response) => {
 };
 
 
-export const watermarkImage = (req: Request, res: Response) => {
+export const greyscaleImage = async (req: Request, res: Response) => {
     const filename: string = req.body.filename;
-    const filePath: string = path.join('images', filename);
+    const filePath: string = path.join(__dirname, '../../images', filename);
+    const greyscalePath: string = path.join(__dirname, '../../images/greyscale', filename);
 
     try {
+        // Ensure the output directory exists
+        const greyscaleDir: string = path.dirname(greyscalePath);
+        if (!fs.existsSync(greyscaleDir)) {
+            fs.mkdirSync(greyscaleDir, { recursive: true });
+        }
+
         if (fs.existsSync(filePath)) {
-            const watermarkPath: string = path.join(__dirname, `../../watermarked/${filePath}`);
-            sharp(filePath)
-                .composite([{input: watermarkPath, gravity: 'southeast'}])
-                .toFile(filePath, (err) => {
-                    if (err) {
-                        console.error('Error watermarking image:', err);
-                        res.status(500).send('Error watermarking the image.');
-                    } else {
-                        res.sendFile(filePath);
-                    }
-                });
+            await sharp(filePath)
+                .greyscale()
+                .toFile(greyscalePath);
+
+            res.sendFile(greyscalePath);
         } else {
             res.status(404).send('File not found.');
         }
-
     } catch (error) {
-        console.error('Error watermark image:', error);
-        res.status(500).send('Error watermarking the image.');
+        console.error('Error applying greyscale to the image:', error);
+        res.status(500).send('Error applying greyscale to the image.');
+    }
+};
+
+
+export const blurImage = async (req: Request, res: Response) => {
+    const filename: string = req.body.filename;
+    const userBlurAmount: number = req.body.amount;
+
+    const userMin: number = 1;
+    const userMax: number = 10;
+    const blurMin: number = 0.3;
+    const blurMax: number = 1000;
+
+    // Convert the user blur amount to the Sharp range
+    const blurAmount: number = (userBlurAmount - userMin) * (blurMax - blurMin) / (userMax - userMin) + blurMin;
+    // Calculate the blur value to ensure it's within the acceptable range
+    const calculatedBlurAmount: number = Math.max(blurMin, Math.min(blurAmount, blurMax));
+
+    const filePath: string = path.join(__dirname, '../../images', filename);
+    const blurPath: string = path.join(__dirname, '../../images/blurred', filename);
+
+    try {
+        // Ensure the output directory exists
+        const blurDir: string = path.dirname(blurPath);
+        if (!fs.existsSync(blurDir)) {
+            fs.mkdirSync(blurDir, { recursive: true });
+        }
+
+        if (fs.existsSync(filePath)) {
+            await sharp(filePath)
+                .blur(calculatedBlurAmount)
+                .toFile(blurPath);
+
+            res.sendFile(blurPath);
+        } else {
+            res.status(404).send('File not found.');
+        }
+    } catch (error) {
+        console.error('Error applying blur to the image:', error);
+        res.status(500).send('Error applying blur to the image.');
     }
 };
