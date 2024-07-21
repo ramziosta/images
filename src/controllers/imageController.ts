@@ -45,13 +45,13 @@ export const uploadImage = async (req: Request, res: Response) => {
 
 // Resize an image
 export const resizeImage = async (req: Request, res: Response) => {
-    const { inputPath, outputPath, parsedWidth, parsedHeight } = req.body;
+    const {inputPath, outputPath, parsedWidth, parsedHeight} = req.body;
 
     try {
         await sharp(inputPath)
-            .resize({ width: parsedWidth, height: parsedHeight })
+            .resize({width: parsedWidth, height: parsedHeight})
             .toFile(outputPath);
-        res.status(200).send({ message: 'Image resized successfully.', filename: req.body.filename });
+        res.status(200).send({message: 'Image resized successfully.', filename: req.body.filename});
     } catch (error) {
         console.error('Error resizing image:', error);
         res.status(500).send('Error resizing image.');
@@ -59,18 +59,17 @@ export const resizeImage = async (req: Request, res: Response) => {
 };
 
 export const cropImage = async (req: Request, res: Response) => {
-    const { inputPath, croppedPath, parsedWidth, parsedHeight, parsedLeft, parsedTop } = req.body;
+    const {inputPath, croppedPath, parsedWidth, parsedHeight, parsedLeft, parsedTop} = req.body;
 
     try {
         await sharp(inputPath)
-            .extract({ width: parsedWidth, height: parsedHeight, left: parsedLeft, top: parsedTop })
+            .extract({width: parsedWidth, height: parsedHeight, left: parsedLeft, top: parsedTop})
             .toFile(path.join(croppedPath));
-        res.status(200).send({ message: 'Image cropped successfully.', inputPath });
+        res.status(200).send({message: 'Image cropped successfully.', inputPath});
     } catch (error) {
         res.status(500).send('Error cropping image.');
     }
 };
-
 
 export const downloadImage = (req: Request, res: Response) => {
     const filename: string = req.params.filename;
@@ -83,3 +82,29 @@ export const downloadImage = (req: Request, res: Response) => {
 };
 
 
+export const watermarkImage = (req: Request, res: Response) => {
+    const filename: string = req.body.filename;
+    const filePath: string = path.join('images', filename);
+
+    try {
+        if (fs.existsSync(filePath)) {
+            const watermarkPath: string = path.join(__dirname, `../../watermarked/${filePath}`);
+            sharp(filePath)
+                .composite([{input: watermarkPath, gravity: 'southeast'}])
+                .toFile(filePath, (err) => {
+                    if (err) {
+                        console.error('Error watermarking image:', err);
+                        res.status(500).send('Error watermarking the image.');
+                    } else {
+                        res.sendFile(filePath);
+                    }
+                });
+        } else {
+            res.status(404).send('File not found.');
+        }
+
+    } catch (error) {
+        console.error('Error watermark image:', error);
+        res.status(500).send('Error watermarking the image.');
+    }
+};
