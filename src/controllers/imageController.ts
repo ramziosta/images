@@ -13,16 +13,16 @@ export const mainPage = async (req: Request, res: Response) => {
             if (err) {
                 console.error('Error sending file:', err);
                 if (!res.headersSent) {
-                    res.sendStatus(500); // Send a 500 status code if there's an error
+                    res.sendStatus(500);
                 }
             } else {
-                console.log('main page');
+                console.log('main upload page');
             }
         });
     } catch (err) {
         console.error('Catch error:', err);
         if (!res.headersSent) {
-            res.sendStatus(500); // Send a 500 status code if there's an error
+            res.sendStatus(500);
         }
     }
 };
